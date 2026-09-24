@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Volonline · Prenotazione tavoli TTG 2026</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="TTG Tavoli">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="theme-color" content="#12263A">
+<style>
+:root{
+  --bg:#EEF2F4; --surface:#FFFFFF; --ink:#12263A; --muted:#5B6B7B; --line:#D4DCE3;
+  --free:#FFFFFF; --taken:#12263A; --takenInk:#FFFFFF; --accent:#0E7C86; --accentSoft:#D7EEF0; --danger:#B3261E;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){ :root:not([data-theme="light"]){
+  --bg:#0F1B26; --surface:#172634; --ink:#E6EDF3; --muted:#9AAAB8; --line:#2A3C4D;
+  --free:#172634; --taken:#5FC3CC; --takenInk:#0F1B26; --accent:#5FC3CC; --accentSoft:#1D3A45; --danger:#F2B8B5;
+}}
+:root[data-theme="dark"]{
+  --bg:#0F1B26; --surface:#172634; --ink:#E6EDF3; --muted:#9AAAB8; --line:#2A3C4D;
+  --free:#172634; --taken:#5FC3CC; --takenInk:#0F1B26; --accent:#5FC3CC; --accentSoft:#1D3A45; --danger:#F2B8B5;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+  font-family:-apple-system,system-ui,"Segoe UI",sans-serif;-webkit-tap-highlight-color:transparent}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:16px;padding:24px 28px 12px}
+h1{font-family:ui-serif,"New York",Georgia,serif;font-weight:600;font-size:clamp(1.6rem,3vw,2.3rem);margin:0;line-height:1.1}
+.sub{color:var(--muted);margin:6px 0 0;font-size:1rem}
+.status{font-size:.85rem;color:var(--muted)}
+.status.off{color:var(--danger)}
+.days{display:flex;gap:8px;padding:0 28px 16px;flex-wrap:wrap}
+.day{border:1.5px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;
+  padding:12px 22px;font:600 1rem inherit;font-family:inherit;cursor:pointer;min-height:48px}
+.day[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.wrap{padding:0 28px 32px;overflow-x:auto}
+table{border-collapse:separate;border-spacing:6px;width:100%;min-width:760px}
+th{font-weight:600;font-size:.95rem;text-align:center;padding:6px;color:var(--muted)}
+th.time{width:78px;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink);font-size:1.05rem}
+td{padding:0}
+.slot{width:100%;min-height:64px;border-radius:10px;border:1.5px dashed var(--line);background:var(--free);
+  color:var(--muted);font:500 .95rem inherit;font-family:inherit;cursor:pointer;padding:8px;text-align:left}
+.slot:hover{border-color:var(--accent);color:var(--accent)}
+.slot.taken{border:1.5px solid var(--taken);background:var(--taken);color:var(--takenInk);border-style:solid}
+.slot.taken b{display:block;font-size:.98rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.slot.taken span{font-size:.8rem;opacity:.8}
+.slot.past{opacity:.45}
+.slot:focus-visible,.day:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tools{display:flex;gap:10px;padding:0 28px 28px;flex-wrap:wrap}
+.ghost{background:none;border:1.5px solid var(--line);color:var(--ink);border-radius:10px;padding:10px 16px;font:500 .95rem inherit;font-family:inherit;cursor:pointer;min-height:44px}
+dialog{border:none;border-radius:16px;padding:0;width:min(520px,92vw);background:var(--surface);color:var(--ink)}
+dialog::backdrop{background:rgba(10,20,30,.55)}
+.dlg{padding:26px}
+.dlg h2{font-family:ui-serif,"New York",Georgia,serif;font-weight:600;margin:0 0 4px;font-size:1.5rem}
+.dlg .when{color:var(--accent);font-weight:600;margin:0 0 18px}
+label{display:block;font-size:.88rem;font-weight:600;margin:12px 0 5px}
+input,select{width:100%;font:1.05rem inherit;font-family:inherit;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);min-height:48px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.actions{display:flex;gap:10px;justify-content:flex-end;margin-top:22px}
+.primary{background:var(--accent);color:#fff;border:none;border-radius:10px;padding:12px 22px;font:600 1rem inherit;font-family:inherit;cursor:pointer;min-height:48px}
+.danger{background:none;color:var(--danger);border:1.5px solid var(--danger);border-radius:10px;padding:12px 18px;font:600 1rem inherit;font-family:inherit;cursor:pointer;min-height:48px;margin-right:auto}
+.err{color:var(--danger);font-size:.9rem;min-height:1.2em;margin:10px 0 0}
+dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:6px 14px}
+dt{color:var(--muted);font-size:.9rem}dd{margin:0;font-weight:500;overflow-wrap:anywhere}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);
+  padding:14px 22px;border-radius:12px;font-weight:600;opacity:0;pointer-events:none;transition:opacity .25s}
+.toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Prenota un tavolo allo stand Volonline</h1>
+    <p class="sub">TTG Travel Experience · Rimini · 14–16 ottobre 2026</p>
+  </div>
+  <div class="status" id="status"></div>
+</header>
+<nav class="days" id="days" aria-label="Giorno"></nav>
+<div class="wrap"><table id="grid" aria-label="Disponibilità tavoli"></table></div>
+<div class="tools">
+  <button class="ghost" id="exportBtn">Esporta CSV</button>
+  <button class="ghost" id="backupBtn">Backup JSON</button>
+  <button class="ghost" id="restoreBtn">Ripristina backup</button>
+  <input type="file" id="restoreFile" accept="application/json,.json" hidden>
+</div>
+
+<dialog id="bookDlg"><form class="dlg" method="dialog" id="bookForm">
+  <h2>Nuova prenotazione</h2><p class="when" id="bookWhen"></p>
+  <label for="f_nome">Nome e cognome *</label><input id="f_nome" required autocomplete="off">
+  <label for="f_azienda">Azienda *</label><input id="f_azienda" required autocomplete="off">
+  <div class="row">
+    <div><label for="f_tipo">Tipologia</label>
+      <select id="f_tipo"><option>Agenzia di viaggi</option><option>Partner</option><option>DMC</option><option>Fornitore</option><option>Altro</option></select></div>
+    <div><label for="f_ref">Referente Volonline</label><input id="f_ref" autocomplete="off"></div>
+  </div>
+  <div class="row">
+    <div><label for="f_email">Email</label><input id="f_email" type="email" autocomplete="off"></div>
+    <div><label for="f_tel">Telefono</label><input id="f_tel" type="tel" autocomplete="off"></div>
+  </div>
+  <p class="err" id="bookErr"></p>
+  <div class="actions"><button type="button" class="ghost" data-close>Annulla</button><button type="submit" class="primary" id="bookSubmit">Conferma</button></div>
+</form></dialog>
+
+<dialog id="infoDlg"><div class="dlg">
+  <h2 id="infoTitle"></h2><p class="when" id="infoWhen"></p>
+  <dl id="infoList"></dl>
+  <div id="pinBox" hidden><label for="pin">PIN staff per annullare</label><input id="pin" type="password" inputmode="numeric" autocomplete="off"></div>
+  <p class="err" id="infoErr"></p>
+  <div class="actions"><button class="danger" id="cancelBtn">Annulla prenotazione</button><button class="ghost" data-close>Chiudi</button></div>
+</div></dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+// ===== CONFIG =====
+const CONFIG = {
+  days: [
+    { id:"2026-10-14", label:"Mer 14 ott", start:"10:00", end:"18:00" },
+    { id:"2026-10-15", label:"Gio 15 ott", start:"10:00", end:"18:00" },
+    { id:"2026-10-16", label:"Ven 16 ott", start:"10:00", end:"17:00" },
+  ],
+  slotMinutes: 30,
+  tables: ["Tavolo 1","Tavolo 2","Tavolo 3","Tavolo 4","Tavolo 5","Tavolo 6"],
+  staffPin: "2026",
+};
+// ==================
+
+const $ = s => document.querySelector(s);
+const STORE="ttg2026_bookings";
+let bookings = load(), activeDay = CONFIG.days[0].id, pending = null;
+function load(){ try{ return JSON.parse(localStorage.getItem(STORE)) || {}; }catch{ return {}; } }
+function save(){ try{ localStorage.setItem(STORE, JSON.stringify(bookings)); return true; }catch{ return false; } }
+
+const toMin = t => { const [h,m]=t.split(":").map(Number); return h*60+m; };
+const toHHMM = m => String(Math.floor(m/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
+const slotsFor = d => { const out=[]; for(let m=toMin(d.start); m<toMin(d.end); m+=CONFIG.slotMinutes) out.push(toHHMM(m)); return out; };
+const keyOf = (day,time,t) => `${day}_${time.replace(":","")}_t${t+1}`;
+const dayLabel = id => CONFIG.days.find(d=>d.id===id)?.label || id;
+const endOf = time => toHHMM(toMin(time)+CONFIG.slotMinutes);
+
+function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("show"); clearTimeout(toast._t); toast._t=setTimeout(()=>t.classList.remove("show"),2600); }
+
+function renderDays(){
+  const nav=$("#days"); nav.textContent="";
+  for(const d of CONFIG.days){
+    const b=document.createElement("button"); b.className="day"; b.textContent=d.label;
+    b.setAttribute("aria-pressed", String(d.id===activeDay));
+    b.onclick=()=>{ activeDay=d.id; renderDays(); renderGrid(); };
+    nav.appendChild(b);
+  }
+}
+
+function isPast(day,time){ return new Date(`${day}T${endOf(time)}:00`) < new Date(); }
+
+var renderGrid=function(){
+  const day=CONFIG.days.find(d=>d.id===activeDay), grid=$("#grid"); grid.textContent="";
+  const head=grid.insertRow(); const c0=document.createElement("th"); head.appendChild(c0);
+  CONFIG.tables.forEach(n=>{ const th=document.createElement("th"); th.textContent=n; head.appendChild(th); });
+  for(const time of slotsFor(day)){
+    const tr=grid.insertRow(); const th=document.createElement("th"); th.className="time"; th.textContent=time; tr.appendChild(th);
+    CONFIG.tables.forEach((name,i)=>{
+      const td=tr.insertCell(), btn=document.createElement("button"), k=keyOf(day.id,time,i), b=bookings[k];
+      btn.className="slot"+(b?" taken":"")+(isPast(day.id,time)?" past":"");
+      if(b){ const bb=document.createElement("b"); bb.textContent=b.azienda; const s=document.createElement("span"); s.textContent=b.nome; btn.append(bb,s);
+        btn.setAttribute("aria-label",`${name} ${time}: occupato da ${b.azienda}`); btn.onclick=()=>openInfo(k,b); }
+      else { btn.textContent="Libero"; btn.setAttribute("aria-label",`${name} ${time}: libero`);
+        btn.onclick=()=>openBook({key:k,day:day.id,time,table:i}); }
+      td.appendChild(btn);
+    });
+  }
+};
+
+function openBook(slot){
+  pending=slot; $("#bookForm").reset(); $("#bookErr").textContent="";
+  $("#bookWhen").textContent=`${CONFIG.tables[slot.table]} · ${dayLabel(slot.day)} · ${slot.time}–${endOf(slot.time)}`;
+  $("#bookDlg").showModal(); setTimeout(()=>$("#f_nome").focus(),50);
+}
+
+$("#bookForm").addEventListener("submit", e=>{
+  e.preventDefault(); if(!pending) return;
+  const nome=$("#f_nome").value.trim(), azienda=$("#f_azienda").value.trim();
+  if(!nome||!azienda){ $("#bookErr").textContent="Nome e azienda sono obbligatori."; return; }
+  if(bookings[pending.key]){ $("#bookErr").textContent="Slot già occupato."; return; }
+  bookings[pending.key]={ day:pending.day, time:pending.time, table:pending.table+1, nome, azienda,
+    tipo:$("#f_tipo").value, referente:$("#f_ref").value.trim(), email:$("#f_email").value.trim(),
+    telefono:$("#f_tel").value.trim(), createdAt:new Date().toISOString() };
+  if(!save()){ delete bookings[pending.key]; $("#bookErr").textContent="Errore di salvataggio."; return; }
+  $("#bookDlg").close(); renderGrid(); toast(`Prenotato: ${CONFIG.tables[pending.table]} alle ${pending.time}`);
+});
+
+let infoKey=null;
+function openInfo(k,b){
+  infoKey=k; $("#infoTitle").textContent=b.azienda;
+  $("#infoWhen").textContent=`Tavolo ${b.table} · ${dayLabel(b.day)} · ${b.time}–${endOf(b.time)}`;
+  const dl=$("#infoList"); dl.textContent="";
+  [["Nome",b.nome],["Tipologia",b.tipo],["Referente",b.referente],["Email",b.email],["Telefono",b.telefono]].forEach(([l,v])=>{
+    if(!v) return; const dt=document.createElement("dt"); dt.textContent=l; const dd=document.createElement("dd"); dd.textContent=v; dl.append(dt,dd); });
+  $("#pinBox").hidden=true; $("#pin").value=""; $("#infoErr").textContent="";
+  $("#infoDlg").showModal();
+}
+$("#cancelBtn").onclick=()=>{
+  if($("#pinBox").hidden){ $("#pinBox").hidden=false; $("#pin").focus(); return; }
+  if($("#pin").value!==CONFIG.staffPin){ $("#infoErr").textContent="PIN errato."; return; }
+  delete bookings[infoKey]; save(); $("#infoDlg").close(); renderGrid(); toast("Prenotazione annullata");
+};
+document.querySelectorAll("[data-close]").forEach(b=>b.onclick=()=>b.closest("dialog").close());
+
+$("#exportBtn").onclick=async()=>{
+  const cols=["day","time","table","azienda","nome","tipo","referente","email","telefono","createdAt"];
+  const esc=v=>`"${String(v??"").replace(/"/g,'""')}"`;
+  const rows=Object.values(bookings).sort((a,b)=>(a.day+a.time+a.table).localeCompare(b.day+b.time+b.table));
+  const csv="\uFEFF"+[cols.join(";"),...rows.map(r=>cols.map(c=>esc(r[c])).join(";"))].join("\n");
+  share("prenotazioni-ttg-2026.csv", csv, "text/csv");
+};
+async function share(name, text, type){
+  const file=new File([text], name, {type});
+  if(navigator.canShare && navigator.canShare({files:[file]})){ try{ await navigator.share({files:[file]}); return; }catch(e){ if(e.name==="AbortError") return; } }
+  const a=document.createElement("a"); a.href=URL.createObjectURL(file); a.download=name; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),5000);
+}
+function askPin(){ const p=prompt("PIN staff"); if(p===null) return false; if(p!==CONFIG.staffPin){ toast("PIN errato"); return false; } return true; }
+$("#backupBtn").onclick=()=>share(`backup-ttg-${new Date().toISOString().slice(0,16).replace(/[:T]/g,"-")}.json`, JSON.stringify(bookings,null,1), "application/json");
+$("#restoreBtn").onclick=()=>{ if(askPin()) $("#restoreFile").click(); };
+$("#restoreFile").onchange=async e=>{
+  const f=e.target.files[0]; if(!f) return;
+  try{ const data=JSON.parse(await f.text()); if(typeof data!=="object"||Array.isArray(data)) throw 0;
+    if(!confirm(`Sostituire le prenotazioni attuali con ${Object.keys(data).length} dal backup?`)) return;
+    bookings=data; save(); renderGrid(); toast("Backup ripristinato"); }
+  catch{ toast("File non valido"); } finally{ e.target.value=""; }
+};
+
+renderDays(); renderGrid();
+setInterval(renderGrid, 60000);
+
+function status(){ $("#status").textContent=`${Object.keys(bookings).length} prenotazioni · salvate sul dispositivo`; }
+const _rg=renderGrid; renderGrid=function(){ _rg(); status(); };
+renderGrid();
+if(navigator.storage?.persist) navigator.storage.persist();
+if("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
+</script>
+</body>
+</html>
